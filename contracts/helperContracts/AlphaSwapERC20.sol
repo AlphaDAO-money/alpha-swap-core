@@ -1,7 +1,7 @@
 pragma solidity =0.5.16;
 
 import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2ERC20.sol";
-import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2ERC20.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/libraries/SafeMath.sol";
 
 contract AlphaSwapERC20 is IUniswapV2ERC20 {
     using SafeMath for uint;
