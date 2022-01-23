@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.5.16;
 
-import './interfaces/IUniswapV2Factory.sol';
-import './AlphaSwapPair.sol';
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2Factory.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/helperContracts/AlphaSwapPair.sol";
 
 contract AlphaSwapFactory is IUniswapV2Factory {
     address public feeTo;
