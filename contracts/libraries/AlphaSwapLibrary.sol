@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.5.0;
 
-import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2Callee.sol";
 
-import "./SafeMath.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/libraries/SafeMath.sol";
 
 library SwapLibrary {
     using SafeMath for uint;
