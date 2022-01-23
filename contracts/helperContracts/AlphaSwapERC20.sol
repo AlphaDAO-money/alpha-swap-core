@@ -1,13 +1,13 @@
 pragma solidity =0.5.16;
 
-import './interfaces/IUniswapV2ERC20.sol';
-import './libraries/SafeMath.sol';
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2ERC20.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2ERC20.sol";
 
-contract SwapERC20 is IUniswapV2ERC20 {
+contract AlphaSwapERC20 is IUniswapV2ERC20 {
     using SafeMath for uint;
 
-    string public constant name = 'Swap-LP-Token';
-    string public constant symbol = 'SWAP-LP';
+    string public constant name = 'AlphaSwap-LP-Token';
+    string public constant symbol = 'AlphaSWAP-LP';
     uint8 public constant decimals = 18;
     uint  public totalSupply;
     mapping(address => uint) public balanceOf;
