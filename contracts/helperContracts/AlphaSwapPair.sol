@@ -1,14 +1,14 @@
 pragma solidity =0.5.16;
 
-import './interfaces/IUniswapV2Pair.sol';
-import './SwapERC20.sol';
-import './libraries/Math.sol';
-import './libraries/UQ112x112.sol';
-import './interfaces/IERC20.sol';
-import './interfaces/IUniswapV2Factory.sol';
-import './interfaces/IUniswapV2Callee.sol';
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2Pair.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/helperContracts/AlphaSwapERC20.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/libraries/Math.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/libraries/UQ112x112.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IERC20.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2Factory.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2Callee.sol";
 
-contract SwapPair is IUniswapV2Pair, SwapERC20 {
+contract AlphaSwapPair is IUniswapV2Pair, AlphaSwapERC20 {
     using SafeMath  for uint;
     using UQ112x112 for uint224;
 
