@@ -4,11 +4,11 @@ pragma solidity =0.6.6;
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
 import '@uniswap/lib/contracts/libraries/TransferHelper.sol';
 
-import './interfaces/IUniswapV2Router02.sol';
-import './libraries/SwapLibrary.sol';
-import './libraries/SafeMath.sol';
-import './interfaces/IERC20.sol';
-import './interfaces/IWETH.sol';
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2Router02.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/libraries/AlphaSwapLibrary.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/libraries/SafeMath.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IERC20.sol";
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IWETH.sol";
 
 contract AlphaSwapRouter is IUniswapV2Router02 {
     using SafeMath for uint;
@@ -43,16 +43,16 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         if (IUniswapV2Factory(factory).getPair(tokenA, tokenB) == address(0)) {
             IUniswapV2Factory(factory).createPair(tokenA, tokenB);
         }
-        (uint reserveA, uint reserveB) = SwapLibrary.getReserves(factory, tokenA, tokenB);
+        (uint reserveA, uint reserveB) = AlphaSwapLibrary.getReserves(factory, tokenA, tokenB);
         if (reserveA == 0 && reserveB == 0) {
             (amountA, amountB) = (amountADesired, amountBDesired);
         } else {
-            uint amountBOptimal = SwapLibrary.quote(amountADesired, reserveA, reserveB);
+            uint amountBOptimal = AlphaSwapLibrary.quote(amountADesired, reserveA, reserveB);
             if (amountBOptimal <= amountBDesired) {
                 require(amountBOptimal >= amountBMin, 'SwapRouterV2: INSUFFICIENT_B_AMOUNT');
                 (amountA, amountB) = (amountADesired, amountBOptimal);
             } else {
-                uint amountAOptimal = SwapLibrary.quote(amountBDesired, reserveB, reserveA);
+                uint amountAOptimal = AlphaSwapLibrary.quote(amountBDesired, reserveB, reserveA);
                 assert(amountAOptimal <= amountADesired);
                 require(amountAOptimal >= amountAMin, 'SwapRouterV2: INSUFFICIENT_A_AMOUNT');
                 (amountA, amountB) = (amountAOptimal, amountBDesired);
@@ -70,7 +70,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         uint deadline
     ) external virtual override ensure(deadline) returns (uint amountA, uint amountB, uint liquidity) {
         (amountA, amountB) = _addLiquidity(tokenA, tokenB, amountADesired, amountBDesired, amountAMin, amountBMin);
-        address pair = SwapLibrary.pairFor(factory, tokenA, tokenB);
+        address pair = AlphaSwapLibrary.pairFor(factory, tokenA, tokenB);
         TransferHelper.safeTransferFrom(tokenA, msg.sender, pair, amountA);
         TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
         liquidity = IUniswapV2Pair(pair).mint(to);
@@ -91,7 +91,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
             amountTokenMin,
             amountETHMin
         );
-        address pair = SwapLibrary.pairFor(factory, token, WETH);
+        address pair = AlphaSwapLibrary.pairFor(factory, token, WETH);
         TransferHelper.safeTransferFrom(token, msg.sender, pair, amountToken);
         IWETH(WETH).deposit{value: amountETH}();
         assert(IWETH(WETH).transfer(pair, amountETH));
@@ -110,10 +110,10 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         address to,
         uint deadline
     ) public virtual override ensure(deadline) returns (uint amountA, uint amountB) {
-        address pair = SwapLibrary.pairFor(factory, tokenA, tokenB);
+        address pair = AlphaSwapLibrary.pairFor(factory, tokenA, tokenB);
         IUniswapV2Pair(pair).transferFrom(msg.sender, pair, liquidity); // send liquidity to pair
         (uint amount0, uint amount1) = IUniswapV2Pair(pair).burn(to);
-        (address token0,) = SwapLibrary.sortTokens(tokenA, tokenB);
+        (address token0,) = AlphaSwapLibrary.sortTokens(tokenA, tokenB);
         (amountA, amountB) = tokenA == token0 ? (amount0, amount1) : (amount1, amount0);
         require(amountA >= amountAMin, 'SwapRouterV2: INSUFFICIENT_A_AMOUNT');
         require(amountB >= amountBMin, 'SwapRouterV2: INSUFFICIENT_B_AMOUNT');
@@ -149,7 +149,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         uint deadline,
         bool approveMax, uint8 v, bytes32 r, bytes32 s
     ) external virtual override returns (uint amountA, uint amountB) {
-        address pair = SwapLibrary.pairFor(factory, tokenA, tokenB);
+        address pair = AlphaSwapLibrary.pairFor(factory, tokenA, tokenB);
         uint value = approveMax ? uint(-1) : liquidity;
         IUniswapV2Pair(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
         (amountA, amountB) = removeLiquidity(tokenA, tokenB, liquidity, amountAMin, amountBMin, to, deadline);
@@ -163,7 +163,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         uint deadline,
         bool approveMax, uint8 v, bytes32 r, bytes32 s
     ) external virtual override returns (uint amountToken, uint amountETH) {
-        address pair = SwapLibrary.pairFor(factory, token, WETH);
+        address pair = AlphaSwapLibrary.pairFor(factory, token, WETH);
         uint value = approveMax ? uint(-1) : liquidity;
         IUniswapV2Pair(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
         (amountToken, amountETH) = removeLiquidityETH(token, liquidity, amountTokenMin, amountETHMin, to, deadline);
@@ -200,7 +200,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         uint deadline,
         bool approveMax, uint8 v, bytes32 r, bytes32 s
     ) external virtual override returns (uint amountETH) {
-        address pair = SwapLibrary.pairFor(factory, token, WETH);
+        address pair = AlphaSwapLibrary.pairFor(factory, token, WETH);
         uint value = approveMax ? uint(-1) : liquidity;
         IUniswapV2Pair(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
         amountETH = removeLiquidityETHSupportingFeeOnTransferTokens(
@@ -213,11 +213,11 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
     function _swap(uint[] memory amounts, address[] memory path, address _to) internal virtual {
         for (uint i; i < path.length - 1; i++) {
             (address input, address output) = (path[i], path[i + 1]);
-            (address token0,) = SwapLibrary.sortTokens(input, output);
+            (address token0,) = AlphaSwapLibrary.sortTokens(input, output);
             uint amountOut = amounts[i + 1];
             (uint amount0Out, uint amount1Out) = input == token0 ? (uint(0), amountOut) : (amountOut, uint(0));
-            address to = i < path.length - 2 ? SwapLibrary.pairFor(factory, output, path[i + 2]) : _to;
-            IUniswapV2Pair(SwapLibrary.pairFor(factory, input, output)).swap(
+            address to = i < path.length - 2 ? AlphaSwapLibrary.pairFor(factory, output, path[i + 2]) : _to;
+            IUniswapV2Pair(AlphaSwapLibrary.pairFor(factory, input, output)).swap(
                 amount0Out, amount1Out, to, new bytes(0)
             );
         }
@@ -229,10 +229,10 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         address to,
         uint deadline
     ) external virtual override ensure(deadline) returns (uint[] memory amounts) {
-        amounts = SwapLibrary.getAmountsOut(factory, amountIn, path);
+        amounts = AlphaSwapLibrary.getAmountsOut(factory, amountIn, path);
         require(amounts[amounts.length - 1] >= amountOutMin, 'SwapRouterV2: INSUFFICIENT_OUTPUT_AMOUNT');
         TransferHelper.safeTransferFrom(
-            path[0], msg.sender, SwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]
+            path[0], msg.sender, AlphaSwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]
         );
         _swap(amounts, path, to);
     }
@@ -243,10 +243,10 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         address to,
         uint deadline
     ) external virtual override ensure(deadline) returns (uint[] memory amounts) {
-        amounts = SwapLibrary.getAmountsIn(factory, amountOut, path);
+        amounts = AlphaSwapLibrary.getAmountsIn(factory, amountOut, path);
         require(amounts[0] <= amountInMax, 'SwapRouterV2: EXCESSIVE_INPUT_AMOUNT');
         TransferHelper.safeTransferFrom(
-            path[0], msg.sender, SwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]
+            path[0], msg.sender, AlphaSwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]
         );
         _swap(amounts, path, to);
     }
@@ -259,10 +259,10 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         returns (uint[] memory amounts)
     {
         require(path[0] == WETH, 'SwapRouterV2: INVALID_PATH');
-        amounts = SwapLibrary.getAmountsOut(factory, msg.value, path);
+        amounts = AlphaSwapLibrary.getAmountsOut(factory, msg.value, path);
         require(amounts[amounts.length - 1] >= amountOutMin, 'SwapRouterV2: INSUFFICIENT_OUTPUT_AMOUNT');
         IWETH(WETH).deposit{value: amounts[0]}();
-        assert(IWETH(WETH).transfer(SwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]));
+        assert(IWETH(WETH).transfer(AlphaSwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]));
         _swap(amounts, path, to);
     }
     function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
@@ -273,10 +273,10 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         returns (uint[] memory amounts)
     {
         require(path[path.length - 1] == WETH, 'SwapRouterV2: INVALID_PATH');
-        amounts = SwapLibrary.getAmountsIn(factory, amountOut, path);
+        amounts = AlphaSwapLibrary.getAmountsIn(factory, amountOut, path);
         require(amounts[0] <= amountInMax, 'SwapRouterV2: EXCESSIVE_INPUT_AMOUNT');
         TransferHelper.safeTransferFrom(
-            path[0], msg.sender, SwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]
+            path[0], msg.sender, AlphaSwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]
         );
         _swap(amounts, path, address(this));
         IWETH(WETH).withdraw(amounts[amounts.length - 1]);
@@ -290,10 +290,10 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         returns (uint[] memory amounts)
     {
         require(path[path.length - 1] == WETH, 'SwapRouterV2: INVALID_PATH');
-        amounts = SwapLibrary.getAmountsOut(factory, amountIn, path);
+        amounts = AlphaSwapLibrary.getAmountsOut(factory, amountIn, path);
         require(amounts[amounts.length - 1] >= amountOutMin, 'SwapRouterV2: INSUFFICIENT_OUTPUT_AMOUNT');
         TransferHelper.safeTransferFrom(
-            path[0], msg.sender, SwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]
+            path[0], msg.sender, AlphaSwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]
         );
         _swap(amounts, path, address(this));
         IWETH(WETH).withdraw(amounts[amounts.length - 1]);
@@ -308,10 +308,10 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         returns (uint[] memory amounts)
     {
         require(path[0] == WETH, 'SwapRouterV2: INVALID_PATH');
-        amounts = SwapLibrary.getAmountsIn(factory, amountOut, path);
+        amounts = AlphaSwapLibrary.getAmountsIn(factory, amountOut, path);
         require(amounts[0] <= msg.value, 'SwapRouterV2: EXCESSIVE_INPUT_AMOUNT');
         IWETH(WETH).deposit{value: amounts[0]}();
-        assert(IWETH(WETH).transfer(SwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]));
+        assert(IWETH(WETH).transfer(AlphaSwapLibrary.pairFor(factory, path[0], path[1]), amounts[0]));
         _swap(amounts, path, to);
         // refund dust eth, if any
         if (msg.value > amounts[0]) TransferHelper.safeTransferETH(msg.sender, msg.value - amounts[0]);
@@ -322,18 +322,18 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
     function _swapSupportingFeeOnTransferTokens(address[] memory path, address _to) internal virtual {
         for (uint i; i < path.length - 1; i++) {
             (address input, address output) = (path[i], path[i + 1]);
-            (address token0,) = SwapLibrary.sortTokens(input, output);
-            IUniswapV2Pair pair = IUniswapV2Pair(SwapLibrary.pairFor(factory, input, output));
+            (address token0,) = AlphaSwapLibrary.sortTokens(input, output);
+            IUniswapV2Pair pair = IUniswapV2Pair(AlphaSwapLibrary.pairFor(factory, input, output));
             uint amountInput;
             uint amountOutput;
             { // scope to avoid stack too deep errors
             (uint reserve0, uint reserve1,) = pair.getReserves();
             (uint reserveInput, uint reserveOutput) = input == token0 ? (reserve0, reserve1) : (reserve1, reserve0);
             amountInput = IERC20(input).balanceOf(address(pair)).sub(reserveInput);
-            amountOutput = SwapLibrary.getAmountOut(amountInput, reserveInput, reserveOutput);
+            amountOutput = AlphaSwapLibrary.getAmountOut(amountInput, reserveInput, reserveOutput);
             }
             (uint amount0Out, uint amount1Out) = input == token0 ? (uint(0), amountOutput) : (amountOutput, uint(0));
-            address to = i < path.length - 2 ? SwapLibrary.pairFor(factory, output, path[i + 2]) : _to;
+            address to = i < path.length - 2 ? AlphaSwapLibrary.pairFor(factory, output, path[i + 2]) : _to;
             pair.swap(amount0Out, amount1Out, to, new bytes(0));
         }
     }
@@ -345,7 +345,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         uint deadline
     ) external virtual override ensure(deadline) {
         TransferHelper.safeTransferFrom(
-            path[0], msg.sender, SwapLibrary.pairFor(factory, path[0], path[1]), amountIn
+            path[0], msg.sender, AlphaSwapLibrary.pairFor(factory, path[0], path[1]), amountIn
         );
         uint balanceBefore = IERC20(path[path.length - 1]).balanceOf(to);
         _swapSupportingFeeOnTransferTokens(path, to);
@@ -369,7 +369,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         require(path[0] == WETH, 'SwapRouterV2: INVALID_PATH');
         uint amountIn = msg.value;
         IWETH(WETH).deposit{value: amountIn}();
-        assert(IWETH(WETH).transfer(SwapLibrary.pairFor(factory, path[0], path[1]), amountIn));
+        assert(IWETH(WETH).transfer(AlphaSwapLibrary.pairFor(factory, path[0], path[1]), amountIn));
         uint balanceBefore = IERC20(path[path.length - 1]).balanceOf(to);
         _swapSupportingFeeOnTransferTokens(path, to);
         require(
@@ -391,7 +391,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
     {
         require(path[path.length - 1] == WETH, 'SwapRouterV2: INVALID_PATH');
         TransferHelper.safeTransferFrom(
-            path[0], msg.sender, SwapLibrary.pairFor(factory, path[0], path[1]), amountIn
+            path[0], msg.sender, AlphaSwapLibrary.pairFor(factory, path[0], path[1]), amountIn
         );
         _swapSupportingFeeOnTransferTokens(path, address(this));
         uint amountOut = IERC20(WETH).balanceOf(address(this));
@@ -402,7 +402,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
 
     // **** LIBRARY FUNCTIONS ****
     function quote(uint amountA, uint reserveA, uint reserveB) public pure virtual override returns (uint amountB) {
-        return SwapLibrary.quote(amountA, reserveA, reserveB);
+        return AlphaSwapLibrary.quote(amountA, reserveA, reserveB);
     }
 
     function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut)
@@ -412,7 +412,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         override
         returns (uint amountOut)
     {
-        return SwapLibrary.getAmountOut(amountIn, reserveIn, reserveOut);
+        return AlphaSwapLibrary.getAmountOut(amountIn, reserveIn, reserveOut);
     }
 
     function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut)
@@ -422,7 +422,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         override
         returns (uint amountIn)
     {
-        return SwapLibrary.getAmountIn(amountOut, reserveIn, reserveOut);
+        return AlphaSwapLibrary.getAmountIn(amountOut, reserveIn, reserveOut);
     }
 
     function getAmountsOut(uint amountIn, address[] memory path)
@@ -432,7 +432,7 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         override
         returns (uint[] memory amounts)
     {
-        return SwapLibrary.getAmountsOut(factory, amountIn, path);
+        return AlphaSwapLibrary.getAmountsOut(factory, amountIn, path);
     }
 
     function getAmountsIn(uint amountOut, address[] memory path)
@@ -442,6 +442,6 @@ contract AlphaSwapRouter is IUniswapV2Router02 {
         override
         returns (uint[] memory amounts)
     {
-        return SwapLibrary.getAmountsIn(factory, amountOut, path);
+        return AlphaSwapLibrary.getAmountsIn(factory, amountOut, path);
     }
 }
