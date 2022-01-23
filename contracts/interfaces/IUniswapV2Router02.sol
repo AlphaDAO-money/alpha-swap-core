@@ -1,6 +1,6 @@
 pragma solidity >=0.6.2;
 
-import './IUniswapV2Router01.sol';
+import "https://github.com/AlphaDAO-money/AlphaSwap/blob/main/contracts/interfaces/IUniswapV2Router01.sol";
 
 interface IUniswapV2Router02 is IUniswapV2Router01 {
     function removeLiquidityETHSupportingFeeOnTransferTokens(
